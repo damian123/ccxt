@@ -90,7 +90,8 @@ jobs:
             "https://boostorg.jfrog.io/artifactory/main/release/1.81.0/binaries/boost_1_81_0-msvc-14.3-64.exe" `
            -d "${{ runner.temp }}" `
            -o "boost_1_81_0-msvc-14.3-64.exe"
-        "${{ runner.temp }}/boost_1_81_0-msvc-14.3-64.exe" \/dir="${{ env.boost_path }}" \/VERYSILENT          
+        "${{ runner.temp }}/boost_1_81_0-msvc-14.3-64.exe" /dir="${{ env.boost_path }}" /VERYSILENT          
+      shell: bash
 
     - name: Build ccxt
       run: |
