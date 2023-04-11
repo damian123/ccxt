@@ -7,8 +7,9 @@
         "spdlog",
         "nlohmann-json",
         "date",
+        "asio",
         "boost-system",
         "boost-coroutine",
-        "boost-filesystem"
+        "boost-filesystem"        
     ]
 }
