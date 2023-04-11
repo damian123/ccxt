@@ -91,7 +91,7 @@ jobs:
            -d "${{ runner.temp }}" `
            -o "boost_1_81_0-msvc-14.3-64.exe"
         "${{ runner.temp }}/boost_1_81_0-msvc-14.3-64.exe" /dir="${{ env.boost_path }}" /VERYSILENT          
-      shell: bash
+      shell: cmd
 
     - name: Build ccxt
       run: |
