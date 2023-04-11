@@ -67,5 +67,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        cpp/testunit/tests.exe      
-        cpp/test/unit/base/test-base.exe
+        ls -lR
+        ${{runner.workspace}}/build/cpp/testunit/tests.exe
+        ${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
