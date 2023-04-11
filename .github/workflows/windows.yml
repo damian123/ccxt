@@ -85,29 +85,10 @@ jobs:
     #       $packages
 
     - name: Install boost
-      uses: MarkusJx/install-boost@v2.4.4
-      id: install-boost
-      with:
-          # REQUIRED: Specify the required boost version
-          # A list of supported versions can be found here:
-          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
-          boost_version: 1.81.0
-          # OPTIONAL: Specify a custon install location
-          boost_install_dir: ${{ env.boost_path }}
-          platform_version: 2022
-          toolset: msvc
-
-          # NOTE: If a boost version matching all requirements cannot be found,
-          # this build step will fail
-
-    # - name: Install boost
-    #   run: |
-    #     aria2c `
-    #         "https://boostorg.jfrog.io/artifactory/main/release/1.81.0/binaries/boost_1_81_0-msvc-14.3-64.exe" `
-    #        -d "${{ runner.temp }}" `
-    #        -o "boost_1_81_0-msvc-14.3-64.exe"
-    #     "${{ runner.temp }}/boost_1_81_0-msvc-14.3-64.exe" /dir="${{ env.boost_path }}" /VERYSILENT          
-    #   shell: bash
+      run: |
+        aria2c "https://boostorg.jfrog.io/artifactory/main/release/1.81.0/binaries/boost_1_81_0-msvc-14.3-64.exe" -d "${{ runner.temp }}" -o "boost_1_81_0-msvc-14.3-64.exe"
+        "${{ runner.temp }}/boost_1_81_0-msvc-14.3-64.exe" /dir="${{ env.boost_path }}" /VERYSILENT          
+      #shell: bash
 
     - name: Build ccxt
       run: |
@@ -121,7 +102,7 @@ jobs:
           -DBOOST_ROOT="${{ env.boost_path }}" `
           -DBUILD_SHARED_LIBS=OFF `
           -DMSVC_RUNTIME_DYNAMIC=OFF `
-          -DVCPKG_TARGET_TRIPLET=x64-windows-static-release `
+          # -DVCPKG_TARGET_TRIPLET=x64-windows-static-release `
           -DVERBOSE_CONFIGURE=ON `            
         cmake --build build --config Debug
         cmake --build build --config Release
