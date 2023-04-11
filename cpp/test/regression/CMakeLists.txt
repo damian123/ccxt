@@ -20,7 +20,7 @@ if(ENABLE_TESTS)
     add_executable(regression-tests ${TESTS_SRCS})    
 
     target_link_libraries(regression-tests PRIVATE ccxt doctest::doctest fmt::fmt nlohmann_json::nlohmann_json
-                                                        Boost::coroutine Boost::filesystem OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
+                                                        Boost::coroutine OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
     if (WIN32)
         target_link_options(regression-tests INTERFACE "/debug:fastlink")
     endif(WIN32)

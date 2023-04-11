@@ -24,7 +24,7 @@ if(ENABLE_TESTS)
     add_executable(test-base ${BASE_TEST_SRCS})
     link_directories(${Boost_LIBRARY_DIRS})
     target_link_libraries(test-base PRIVATE ccxt doctest::doctest fmt::fmt nlohmann_json::nlohmann_json
-                                            Boost::filesystem OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
+                                            OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
     if (WIN32)
         target_link_options(test-base INTERFACE "/debug:fastlink")
     endif(WIN32)

@@ -12,7 +12,7 @@ set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
 
 ####################### Boost ##########################
-find_package(Boost REQUIRED COMPONENTS system coroutine filesystem) 
+find_package(Boost REQUIRED COMPONENTS system coroutine)
 IF(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 ENDIF(Boost_FOUND)
