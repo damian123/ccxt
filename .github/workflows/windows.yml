@@ -64,9 +64,11 @@ jobs:
         cmake --build ${{runner.workspace}}/build --config Release
 
     - name: Test
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        find / -name tests.exe
-        ${{runner.workspace}}/build/cpp/testunit/tests.exe
-        ${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
+      run: |        
+        echo "calling ${{runner.workspace}}/build/cpp\test\unit\tests.exe"
+        ${{runner.workspace}}/build/cpp\test\unit\tests.exe
+        echo "calling D:/a/ccxt/build/cpp\test\unit\tests.exe"
+        D:/a/ccxt/build/cpp\test\unit\tests.exe
+        #${{runner.workspace}}/build/cpp/testunit/tests.exe
+        #${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
