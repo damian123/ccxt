@@ -65,11 +65,6 @@ jobs:
 
     - name: Test
       run: |
-        cd
-        dir /s ..\build
         ..\build\cpp\test\unit\tests.exe
         ..\build\cpp\test\unit\base\test-base.exe
       shell: cmd
-
-#${{runner.workspace}}/build/cpp/testunit/tests.exe
-#${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
