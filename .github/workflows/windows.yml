@@ -21,56 +21,82 @@ jobs:
         os: [windows-latest]
         platform: [x64]
         build_type: [Debug, Release]
-        kind: [static, shared]
+        # kind: [static, shared]
         std: [20]
-    cxx: cl.exe
-    cc: cl.exe
-    triplet: x64-windows
-    packages: >
-        boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
-        openssl fmt fmt spdlog nlohmann-json date
+    # cxx: cl.exe
+    # cc: cl.exe
+    # triplet: x64-windows
+    # packages: >
+    #     boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
+    #     openssl fmt fmt spdlog nlohmann-json date
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
     
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup devcmd
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
+    
+    - name: Install build tools
+      run: 
+        choco install ninja
 
-    - name: Set Environment vars
+    # use the preinstalled vcpkg from image
+    # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md#package-management
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgDirectory: C:/vcpkg
+        doNotUpdateVcpkg: true  # the preinstalled vcpkg is updated regularly
+
+    - name: Install dependencies from vcpkg
       run: |
-          echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
-          echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
+        # tell vcpkg to only build Release variants of the dependencies
+        New-Item `
+          -Path "${{ github.workspace }}" `
+          -Name "triplets_overlay" `
+          -ItemType Directory
+        Copy-Item `
+          "${{ env.RUNVCPKG_VCPKG_ROOT }}/triplets/x64-windows-static.cmake" `
+          "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake"
+        Add-Content `
+          "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake" `
+          -Value "set(VCPKG_BUILD_TYPE release)"
+        # clear buildtrees after each package installation to reduce disk space requirements
+        $packages = `
+          "openssl:x64-windows-static-release",
+          "fmt:x64-windows-static-release",
+          "spdlog:x64-windows-static-release",
+          "nlohmann-json:x64-windows-static-release",
+          "date:x64-windows-static-release",
+          "boost:x64-windows-static-release"
+        ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe upgrade `
+          --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
+          --no-dry-run
+        ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe install `
+          --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
+          --clean-after-build `
+          $packages
 
-    - name: Run vcpkg
-      uses: lukka/run-vcpkg@v7
-      with:
-        vcpkgArguments: ${{ matrix.packages }}
-        vcpkgDirectory: ${{ runner.workspace }}/vcpkg/
-        vcpkgTriplet: ${{ matrix.triplet }}
-        vcpkgGitCommitId: 6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2
+    - name: Build ccxt
+      run: |
+        cmake `
+          -B build `
+          -G "Ninja" `
+          -DCMAKE_BUILD_TYPE=${{matrix.build_type}} `
+          -DCMAKE_CXX_FLAGS="/WX" `
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.RUNVCPKG_VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
+          -DMSVC_RUNTIME_DYNAMIC=OFF `
+          -DVCPKG_TARGET_TRIPLET=x64-windows-static-release `
+          -DVERBOSE_CONFIGURE=ON
+        cmake --build build --config Debug
+        cmake --build build --config Release
 
-    - name: Build with CMake
-      uses: lukka/run-cmake@v3
-      with:
-        buildDirectory: ${{ runner.workspace }}/build
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-        cmakeAppendedArgs: '-G Ninja -DCMAKE_BUILD_TYPE="${{ matrix.buildtype }}"'
-        useVcpkgToolchainFile: true
-
-    # - name: Create Build Environment
-    #     working-directory: ${{runner.workspace}}
-    #     run: |
-    #       cmake -S $Env:GITHUB_WORKSPACE               `
-    #             -B ${{runner.workspace}}/build         `
-    #             -DCMAKE_CXX_STANDARD=${{matrix.std}}   `
-    #             -A ${{matrix.platform}}                `
-    #             --preset all-tests
-
-    #   - name: Build tests
-    #     working-directory: ${{runner.workspace}}
-    #     run: cmake --build build --config ${{matrix.build_type}} --parallel %NUMBER_OF_PROCESSORS%
-    #     shell: cmd
 
     # - name: Create Build Environment
     #   run: |
