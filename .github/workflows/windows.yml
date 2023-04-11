@@ -30,6 +30,8 @@ jobs:
     #     boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
     #     openssl fmt fmt spdlog nlohmann-json date
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    env:
+      boost_path: "${{ github.workspace }}/../boost"
     
     steps:
     - name: Checkout repository
