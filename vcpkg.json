@@ -6,6 +6,9 @@
         "openssl",
         "spdlog",
         "nlohmann-json",
-        "date"
+        "date",
+        "boost-system",
+        "boost-coroutine",
+        "boost-filesystem"
     ]
 }
