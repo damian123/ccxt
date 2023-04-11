@@ -31,7 +31,7 @@ jobs:
     # for the hosting system will be automatically
     # choosen (x64 is the default on all platforms, 
     # e.g. x64-windows).
-      VCPKG_DEFAULT_TRIPLET: ${{ x64-windows-static-release }} 
+    #  VCPKG_DEFAULT_TRIPLET: ${{ x64-windows-static-release }} 
     
     steps:
     - name: Checkout repository
