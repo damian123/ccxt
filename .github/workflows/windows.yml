@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{matrix.os}}    
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         platform: [x64]
         build_type: [Debug, Release]
         # kind: [static, shared]
@@ -94,9 +94,7 @@ jobs:
           boost_version: 1.81.0
           # OPTIONAL: Specify a custon install location
           boost_install_dir: ${{ env.boost_path }}
-          # OPTIONAL: Specify a platform version
-          # platform_version: 2022
-          # OPTIONAL: Specify a toolset
+          platform_version: 2022
           toolset: msvc
 
           # NOTE: If a boost version matching all requirements cannot be found,
