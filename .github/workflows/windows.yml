@@ -91,13 +91,13 @@ jobs:
           # REQUIRED: Specify the required boost version
           # A list of supported versions can be found here:
           # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
-          boost_version: 1.81.1
+          boost_version: 1.81.0
           # OPTIONAL: Specify a custon install location
           boost_install_dir: ${{ env.boost_path }}
           # OPTIONAL: Specify a platform version
-          #platform_version: 2022
+          # platform_version: 2022
           # OPTIONAL: Specify a toolset
-          #toolset: msvc
+          toolset: msvc
 
           # NOTE: If a boost version matching all requirements cannot be found,
           # this build step will fail
