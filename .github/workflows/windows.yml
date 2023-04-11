@@ -52,7 +52,7 @@ jobs:
     - name: Build ccxt
       run: |
         cmake `
-          -B build `
+          -B ${{runner.workspace}}/build `
           -G "Ninja" `
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}} `
           -DCMAKE_CXX_FLAGS="/WX" `
@@ -60,11 +60,11 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE="${{ env.RUNVCPKG_VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
           -DBUILD_SHARED_LIBS=OFF `
           -DMSVC_RUNTIME_DYNAMIC=OFF
-        cmake --build build --config Debug
-        cmake --build build --config Release
+        cmake --build ${{runner.workspace}}/build --config Debug
+        cmake --build ${{runner.workspace}}/build --config Release
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
       run: |
-        cpp/test/unit/base/debug/test-base.exe
-        cpp/test/unit/debug/tests.exe
+        cpp/test/unit/base/Debug/test-base.exe
+        cpp/test/unit/Debug/tests.exe
