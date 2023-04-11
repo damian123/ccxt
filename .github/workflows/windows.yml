@@ -65,9 +65,10 @@ jobs:
 
     - name: Test
       run: |    
-        run: echo %PATH%    
+        echo %PATH%    
         echo "calling %PATH%\build\cpp\test\unit\tests.exe"
-        %PATH%\build\cpp\test\unit\tests.exe        
-        #${{runner.workspace}}/build/cpp/testunit/tests.exe
-        #${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
+        %PATH%\build\cpp\test\unit\tests.exe                
       shell: cmd
+
+#${{runner.workspace}}/build/cpp/testunit/tests.exe
+#${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
