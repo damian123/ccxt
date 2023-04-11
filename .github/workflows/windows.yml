@@ -64,11 +64,10 @@ jobs:
         cmake --build ${{runner.workspace}}/build --config Release
 
     - name: Test
-      shell: bash
-      run: |        
-        echo "calling ${{runner.workspace}}/build/cpp\test\unit\tests.exe"
-        ${{runner.workspace}}/build/cpp\test\unit\tests.exe
-        echo "calling D:/a/ccxt/build/cpp\test\unit\tests.exe"
-        D:/a/ccxt/build/cpp\test\unit\tests.exe
+      run: |    
+        run: echo %PATH%    
+        echo "calling %PATH%\build\cpp\test\unit\tests.exe"
+        %PATH%\build\cpp\test\unit\tests.exe        
         #${{runner.workspace}}/build/cpp/testunit/tests.exe
         #${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
+      shell: cmd
