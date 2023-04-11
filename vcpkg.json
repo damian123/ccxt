@@ -1,0 +1,11 @@
+{
+    "name": "main",
+    "version-string": "latest",
+    "dependencies": [
+        "fmt",
+        "openssl",
+        "spdlog",
+        "nlohmann-json",
+        "date"
+    ]
+}

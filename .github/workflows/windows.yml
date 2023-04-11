@@ -23,19 +23,21 @@ jobs:
         build_type: [Debug, Release]
         # kind: [static, shared]
         std: [20]
-    # cxx: cl.exe
-    # cc: cl.exe
-    # triplet: x64-windows
-    # packages: >
-    #     boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
-    #     openssl fmt fmt spdlog nlohmann-json date
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
     env:
       boost_path: "${{ github.workspace }}/../boost"
+    # Define the vcpkg's triplet 
+    # you want to enforce, otherwise the default one 
+    # for the hosting system will be automatically
+    # choosen (x64 is the default on all platforms, 
+    # e.g. x64-windows).
+      VCPKG_DEFAULT_TRIPLET: ${{ x64-windows-static-release }} 
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        submodules: true
 
     - name: Setup devcmd
       uses: ilammy/msvc-dev-cmd@v1
@@ -50,38 +52,37 @@ jobs:
     # use the preinstalled vcpkg from image
     # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md#package-management
     - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v10
+      uses: lukka/run-vcpkg@v11      
       with:
-        vcpkgDirectory: C:/vcpkg
-        doNotUpdateVcpkg: true  # the preinstalled vcpkg is updated regularly
+          vcpkgJsonGlob: 'vcpkg.json'
 
-    - name: Install dependencies from vcpkg
-      run: |
-        # tell vcpkg to only build Release variants of the dependencies
-        New-Item `
-          -Path "${{ github.workspace }}" `
-          -Name "triplets_overlay" `
-          -ItemType Directory
-        Copy-Item `
-          "${{ env.RUNVCPKG_VCPKG_ROOT }}/triplets/x64-windows-static.cmake" `
-          "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake"
-        Add-Content `
-          "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake" `
-          -Value "set(VCPKG_BUILD_TYPE release)"
-        # clear buildtrees after each package installation to reduce disk space requirements
-        $packages = `
-          "openssl:x64-windows-static-release",
-          "fmt:x64-windows-static-release",
-          "spdlog:x64-windows-static-release",
-          "nlohmann-json:x64-windows-static-release",
-          "date:x64-windows-static-release"
-        ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe upgrade `
-          --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
-          --no-dry-run
-        ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe install `
-          --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
-          --clean-after-build `
-          $packages
+    # - name: Install dependencies from vcpkg
+    #   run: |
+    #     # tell vcpkg to only build Release variants of the dependencies
+    #     New-Item `
+    #       -Path "${{ github.workspace }}" `
+    #       -Name "triplets_overlay" `
+    #       -ItemType Directory
+    #     Copy-Item `
+    #       "${{ env.RUNVCPKG_VCPKG_ROOT }}/triplets/x64-windows-static.cmake" `
+    #       "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake"
+    #     Add-Content `
+    #       "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake" `
+    #       -Value "set(VCPKG_BUILD_TYPE release)"
+    #     # clear buildtrees after each package installation to reduce disk space requirements
+    #     $packages = `
+    #       "openssl:x64-windows-static-release",
+    #       "fmt:x64-windows-static-release",
+    #       "spdlog:x64-windows-static-release",
+    #       "nlohmann-json:x64-windows-static-release",
+    #       "date:x64-windows-static-release"
+    #     ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe upgrade `
+    #       --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
+    #       --no-dry-run
+    #     ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe install `
+    #       --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
+    #       --clean-after-build `
+    #       $packages
 
     - name: Install boost
       run: |

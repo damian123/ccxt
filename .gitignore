@@ -35,3 +35,5 @@ python/LICENSE.txt
 .cache
 *.log
 *.un~
+/vs_studio_build
+/vcpkg
