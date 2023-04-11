@@ -94,9 +94,7 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
           -DCMAKE_TOOLCHAIN_FILE="${{ env.RUNVCPKG_VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
           -DBUILD_SHARED_LIBS=OFF `
-          -DMSVC_RUNTIME_DYNAMIC=OFF `
-          # -DVCPKG_TARGET_TRIPLET=x64-windows-static-release `
-          -DVERBOSE_CONFIGURE=ON
+          -DMSVC_RUNTIME_DYNAMIC=OFF
         cmake --build build --config Debug
         cmake --build build --config Release
 
