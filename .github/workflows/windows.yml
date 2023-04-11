@@ -66,10 +66,9 @@ jobs:
     - name: Test
       run: |
         cd
-        dir /s ..
-        echo "calling ..\build\cpp\test\unit\tests.exe"
+        dir /s ..\build
         ..\build\cpp\test\unit\tests.exe
-        ..\build\cpp\test\unit\/base/test-base.exe
+        ..\build\cpp\test\unit\base\test-base.exe
       shell: cmd
 
 #${{runner.workspace}}/build/cpp/testunit/tests.exe
