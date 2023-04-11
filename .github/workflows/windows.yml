@@ -66,5 +66,5 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build
       run: |
-        cpp/test/unit/base/Debug/test-base.exe
-        cpp/test/unit/Debug/tests.exe
+        cpp\\testunit\\tests.exe      
+        cpp\\test\\unit\\base\\test-base.exe        
