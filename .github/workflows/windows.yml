@@ -1,0 +1,106 @@
+name: windows
+
+on: 
+  push:
+  pull_request:
+    types: [ opened, synchronize, closed, ready_for_review, review_requested ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{matrix.os}}, ${{matrix.std}}, ${{matrix.build_type}}, ${{matrix.platform}}
+    runs-on: ${{matrix.os}}    
+    strategy:
+      matrix:
+        os: [windows-latest]
+        platform: [x64]
+        build_type: [Debug, Release]
+        kind: [static, shared]
+        std: [20]
+        include:
+        - arch: 'x64'
+          suffix: ''
+        - arch: 'arm64'
+          suffix: 'arm64'
+        cxx: cl.exe
+        cc: cl.exe
+        triplet: x64-windows
+        packages: >
+              boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
+              openssl fmt fmt spdlog nlohmann-json date
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Set Environment vars
+      run: |
+          echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
+          echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
+
+    - name: Run vcpkg
+        uses: lukka/run-vcpkg@v7
+        with:
+          vcpkgArguments: ${{ matrix.packages }}
+          vcpkgDirectory: ${{ runner.workspace }}/vcpkg/
+          vcpkgTriplet: ${{ matrix.triplet }}
+          vcpkgGitCommitId: 6f7ffeb18f99796233b958aaaf14ec7bd4fb64b2
+
+    - name: Build with CMake
+        uses: lukka/run-cmake@v3
+        with:
+          buildDirectory: ${{ runner.workspace }}/build
+          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+          cmakeAppendedArgs: '-G Ninja -DCMAKE_BUILD_TYPE="${{ matrix.buildtype }}"'
+          useVcpkgToolchainFile: true
+
+    # - name: Create Build Environment
+    #     working-directory: ${{runner.workspace}}
+    #     run: |
+    #       cmake -S $Env:GITHUB_WORKSPACE               `
+    #             -B ${{runner.workspace}}/build         `
+    #             -DCMAKE_CXX_STANDARD=${{matrix.std}}   `
+    #             -A ${{matrix.platform}}                `
+    #             --preset all-tests
+
+    #   - name: Build tests
+    #     working-directory: ${{runner.workspace}}
+    #     run: cmake --build build --config ${{matrix.build_type}} --parallel %NUMBER_OF_PROCESSORS%
+    #     shell: cmd
+
+    # - name: Create Build Environment
+    #   run: |
+    #     ${{matrix.install}}
+    #     vcpkg.exe install fmt spdlog nlohmann-json date openssl boost --triplet x64-windows-static        
+    #     cmake -E make_directory ${{runner.workspace}}/build
+
+    # - name: Configure
+    #   working-directory: ${{runner.workspace}}/build
+    #   env:
+    #     CXX: ${{matrix.cxx}}
+    #     CXXFLAGS: ${{matrix.cxxflags}}
+    #   run: |
+    #     cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} ${{matrix.shared}} \
+    #           -DCMAKE_CXX_STANDARD=${{matrix.std}} \
+    #           -GNinja \
+    #           $GITHUB_WORKSPACE
+
+    # - name: Build
+    #   working-directory: ${{runner.workspace}}/build
+    #   run: |        
+    #     cmake --build . --config ${{matrix.build_type}}
+
+    # - name: Test
+    #   working-directory: ${{runner.workspace}}/build
+    #   run: |
+    #     cpp/test/unit/base/test-base
+    #     cpp/test/unit/tests
