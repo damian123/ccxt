@@ -64,12 +64,12 @@ jobs:
         cmake --build ${{runner.workspace}}/build --config Release
 
     - name: Test
-      run: |    
-        cd        
+      run: |
+        cd
+        dir /s
         echo "calling cpp\test\unit\tests.exe"
         cpp\test\unit\tests.exe
       shell: cmd
-      working-directory: build
 
 #${{runner.workspace}}/build/cpp/testunit/tests.exe
 #${{runner.workspace}}/build/cpp/test/unit/base/test-base.exe
