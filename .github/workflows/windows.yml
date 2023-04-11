@@ -24,10 +24,10 @@ jobs:
         kind: [static, shared]
         std: [20]
         include:
-        - arch: 'x64'
-          suffix: ''
-        - arch: 'arm64'
-          suffix: 'arm64'
+        # - arch: 'x64'
+        #   suffix: ''
+        # - arch: 'arm64'
+        #   suffix: 'arm64'
         cxx: cl.exe
         cc: cl.exe
         triplet: x64-windows
