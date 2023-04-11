@@ -24,13 +24,6 @@ jobs:
         # kind: [static, shared]
         std: [20]
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
-    #env:
-    # Define the vcpkg's triplet 
-    # you want to enforce, otherwise the default one 
-    # for the hosting system will be automatically
-    # choosen (x64 is the default on all platforms, 
-    # e.g. x64-windows).
-    #  VCPKG_DEFAULT_TRIPLET: ${{ x64-windows-static-release }} 
     
     steps:
     - name: Checkout repository
@@ -56,34 +49,6 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           doNotUpdateVcpkg: true  # the preinstalled vcpkg is updated regularly
 
-    # - name: Install dependencies from vcpkg
-    #   run: |
-    #     # tell vcpkg to only build Release variants of the dependencies
-    #     New-Item `
-    #       -Path "${{ github.workspace }}" `
-    #       -Name "triplets_overlay" `
-    #       -ItemType Directory
-    #     Copy-Item `
-    #       "${{ env.RUNVCPKG_VCPKG_ROOT }}/triplets/x64-windows-static.cmake" `
-    #       "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake"
-    #     Add-Content `
-    #       "${{ github.workspace }}/triplets_overlay/x64-windows-static-release.cmake" `
-    #       -Value "set(VCPKG_BUILD_TYPE release)"
-    #     # clear buildtrees after each package installation to reduce disk space requirements
-    #     $packages = `
-    #       "openssl:x64-windows-static-release",
-    #       "fmt:x64-windows-static-release",
-    #       "spdlog:x64-windows-static-release",
-    #       "nlohmann-json:x64-windows-static-release",
-    #       "date:x64-windows-static-release"
-    #     ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe upgrade `
-    #       --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
-    #       --no-dry-run
-    #     ${{ env.RUNVCPKG_VCPKG_ROOT }}/vcpkg.exe install `
-    #       --overlay-triplets="${{ github.workspace }}/triplets_overlay" `
-    #       --clean-after-build `
-    #       $packages
-
     - name: Build ccxt
       run: |
         cmake `
@@ -98,25 +63,8 @@ jobs:
         cmake --build build --config Debug
         cmake --build build --config Release
 
-
-    # - name: Configure
-    #   working-directory: ${{runner.workspace}}/build
-    #   env:
-    #     CXX: ${{matrix.cxx}}
-    #     CXXFLAGS: ${{matrix.cxxflags}}
-    #   run: |
-    #     cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} ${{matrix.shared}} \
-    #           -DCMAKE_CXX_STANDARD=${{matrix.std}} \
-    #           -GNinja \
-    #           $GITHUB_WORKSPACE
-
-    # - name: Build
-    #   working-directory: ${{runner.workspace}}/build
-    #   run: |        
-    #     cmake --build . --config ${{matrix.build_type}}
-
-    # - name: Test
-    #   working-directory: ${{runner.workspace}}/build
-    #   run: |
-    #     cpp/test/unit/base/test-base
-    #     cpp/test/unit/tests
+    - name: Test
+      working-directory: ${{runner.workspace}}/build
+      run: |
+        cpp/test/unit/base/debug/test-base.exe
+        cpp/test/unit/debug/tests.exe

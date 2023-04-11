@@ -24,11 +24,6 @@ endif(UNIX)
 ########################################################
 
 if(MSVC)
-    # add_compile_options(
-    #     $<$<CONFIG:>:/MT> #---------|
-    #     $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
-    #     $<$<CONFIG:Release>:/MT> #--|
-    # )
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /D_WIN32_WINNT=0x0A00 /MP  /EHsc") # more info here https://learn.microsoft.com/en-us/windows/win32/winprog/using-the-windows-headers?redirectedfrom=MSDN#setting_winver_or__win32_winnt    
 endif()
 
