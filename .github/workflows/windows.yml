@@ -23,14 +23,12 @@ jobs:
         build_type: [Debug, Release]
         kind: [static, shared]
         std: [20]
-    include:
-      - name: windows-latest
-        cxx: cl.exe
-        cc: cl.exe
-        triplet: x64-windows
-        packages: >
-              boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
-            openssl fmt fmt spdlog nlohmann-json date
+    cxx: cl.exe
+    cc: cl.exe
+    triplet: x64-windows
+    packages: >
+        boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-filesystem boost-uuid
+        openssl fmt fmt spdlog nlohmann-json date
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
     
     steps:
